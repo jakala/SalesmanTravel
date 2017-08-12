@@ -48,6 +48,10 @@ List of Cities:
 * Cairo 30.200000 31.210000
 * Lusaka -15.250000 28.160000`
 
+## Tests
+
+`./bin/phpunit .`
+
 ## TODO
 
 

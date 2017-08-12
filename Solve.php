@@ -141,7 +141,7 @@ class Solve
      */
     public function __toString()
     {
-        $result = "List of Cities:\n";
+        $result = "\nList of Cities:\n";
 
         foreach ($this->path as $city => $gps) {
             $result.= sprintf("%s %f %f\n", $city, $gps['lat'], $gps['lon']);
