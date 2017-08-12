@@ -60,9 +60,12 @@ class Solve
                 $lon = $tmp[2];
             }
 
-            $this->cities[$key] = ['lat' => floatval($lat), 'lon' => floatval($lon)];
-        }
+            $key = trim($key);
 
+            $this->cities[$key] = ['lat' => floatval($lat), 'lon' => floatval($lon)];
+            var_dump($key, $this->cities[$key]);
+        }
+die();
         return $this;
     }
 
@@ -75,7 +78,8 @@ class Solve
         foreach($x as $city1 => $gps1) {
             foreach ($y as $city2 =>$gps2) {
                 $distance = $this->pythagoras($gps1, $gps2);
-                $this->distances[$city1][$city2] =  $distance;
+var_dump($distance);
+                $this->distances[$city1."-".$city2] =  $distance;
             }
 
         }
