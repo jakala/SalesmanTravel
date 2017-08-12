@@ -16,6 +16,12 @@ class SolveTest extends TestCase
         // file is in root directory.
         $solve = new Solve();
 
-        $this->assertTrue($solve->readFile());
+        $this->assertEmpty($solve->getCities());
+
+        $solve->readFile();
+
+        $this->assertNotEmpty($solve->getCities());
     }
+
+    
 }
