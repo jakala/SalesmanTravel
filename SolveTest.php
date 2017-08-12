@@ -23,5 +23,16 @@ class SolveTest extends TestCase
         $this->assertNotEmpty($solve->getCities());
     }
 
-    
+    public function testCalculateDistances()
+    {
+        $solve = new Solve();
+        $solve->readFile();
+
+        $this->assertEmpty($solve->getDistances());
+
+        $solve->calculateDistances();
+
+        $this->assertNotEmpty($solve->getDistances());
+    }
+
 }

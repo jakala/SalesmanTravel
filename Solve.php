@@ -10,10 +10,13 @@ namespace App;
 class Solve
 {
     private $cities;
+    private $distances;
+
 
     public function __construct()
     {
         $this->cities = [];
+        $this->distances = [];
     }
 
 
@@ -22,26 +25,74 @@ class Solve
         return $this->cities;
     }
 
+    public function getDistances()
+    {
+        return $this->distances;
+    }
 
+    /** read the cities.txt file and put info in associative array, with city name as key and
+     * two parameters lat, lon, like
+     *
+     *    "city" => ["lat" => 0.0, "lon"=> 9.3]
+     *
+     * returns: $this
+     */
     public function readFile()
     {
         // file is in root directory.
         $file = __DIR__.'/cities.txt';
 
-        try {
-            $content = file($file, FILE_IGNORE_NEW_LINES);
+        $content = file($file, FILE_IGNORE_NEW_LINES);
 
+        foreach ($content as $city) {
 
-            foreach ($content as $city) {
-                list($city, $lat, $lon) = explode(' ', $city);
-                $this->cities[$city] = ['lat' => floatval($lat), 'lon' => floatval($lon)];
+            $tmp = explode(' ', $city);
+
+            if(isset($tmp[3])) {
+                // case cities with two words in name
+                $key = $tmp[0]." ".$tmp[1];
+                $lat = $tmp[2];
+                $lon = $tmp[3];
+            } else {
+                // city with 1 word in name
+                $key = $tmp[0];
+                $lat = $tmp[1];
+                $lon = $tmp[2];
             }
-        } catch(\Exception $e) {
-            var_dump($e); die();
-        }
 
+            $this->cities[$key] = ['lat' => floatval($lat), 'lon' => floatval($lon)];
+        }
 
         return $this;
     }
 
+    public function calculateDistances()
+    {
+        // calculate distances between cities
+        $x = $this->getCities();
+        $y = $this->getCities();
+
+        foreach($x as $city1 => $gps1) {
+            foreach ($y as $city2 =>$gps2) {
+                $distance = $this->pythagoras($gps1, $gps2);
+                $this->distances[$city1][$city2] =  $distance;
+            }
+
+        }
+
+
+        var_dump($this->distances); die();
+
+    }
+
+
+    private function pythagoras($point1, $point2)
+    {
+        $cat1 = $point2['lat'] - $point1['lat'];
+        $cat2 = $point2['lon'] - $point2['lon'];
+
+        $h = sqrt( ($cat1 * $cat1) + ($cat2 * $cat2)  );
+
+        return $h;
+    }
 }
