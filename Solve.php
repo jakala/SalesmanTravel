@@ -144,7 +144,7 @@ class Solve
         $result = "\nList of Cities:\n";
 
         foreach ($this->path as $city => $gps) {
-            $result.= sprintf("%s %f %f\n", $city, $gps['lat'], $gps['lon']);
+            $result.= sprintf("%s\n", $city);
         }
 
         return $result;
