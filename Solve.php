@@ -11,12 +11,14 @@ class Solve
 {
     private $cities;
     private $distances;
+    private $path;
 
 
     public function __construct()
     {
         $this->cities = [];
         $this->distances = [];
+        $this->path = [];
     }
 
 
@@ -76,19 +78,66 @@ class Solve
 
         foreach($x as $city1 => $gps1) {
             foreach ($y as $city2 =>$gps2) {
-                $distance = $this->pythagoras($gps1, $gps2);
-                $this->distances[$city1."-".$city2] =  $distance;
+                if($city1 <> $city2) {
+                    $distance = $this->pythagoras($gps1, $gps2);
+                    $this->distances[$city1][$city2] = $distance;
+                }
             }
 
+            asort($this->distances[$city1]);
+       }
+
+    }
+
+
+    /*
+     * there are too many algorithms to solve the salesman travel problem. I choose the simplest: select the sort path
+     * iterative.
+     *
+     */
+    public function sort()
+    {
+        // we start in Beijing
+
+        $myCities = $this->getDistances();
+        $actual = "Beijing";
+
+        $count = 0;
+
+        do {
+
+            $this->path[$actual] = $this->cities[$actual];
+            $keys = array_keys($myCities[$actual]);
+
+            $myCities = $this->clear($myCities, $actual);
+
+            $actual = $keys[0];
+
+            $count++;
+
+        } while (!empty($myCities) && $count < count($this->cities) -1);
+    }
+
+
+    /*
+    * Clear all references of actual city in list.
+    */
+    private function clear($list, $actual)
+    {
+
+        unset ($list[$actual]);
+        foreach($list as $key =>  $tmp) {
+                unset($list[$key][$actual]);
         }
 
+        return $list;
     }
 
     public function __toString()
     {
         $result = "List of Cities:\n";
 
-        foreach ($this->cities as $city => $gps) {
+        foreach ($this->path as $city => $gps) {
             $result.= sprintf("%s %f %f\n", $city, $gps['lat'], $gps['lon']);
         }
 
@@ -99,17 +148,36 @@ class Solve
 
     private function pythagoras($point1, $point2)
     {
-        $cat1 = $point2['lat'] - $point1['lat'];
-        $cat2 = $point2['lon'] - $point2['lon'];
-
-        $h = sqrt( ($cat1 * $cat1) + ($cat2 * $cat2)  );
+        $h = $this->distanceCalculation($point1['lat'], $point1['lon'], $point2['lat'], $point2['lon']);
 
         return $h;
     }
+
+    private function distanceCalculation($point1_lat, $point1_long, $point2_lat, $point2_long, $unit = 'km', $decimals = 2) {
+        // Cálculo de la distancia en grados
+        $degrees = rad2deg(acos((sin(deg2rad($point1_lat))*sin(deg2rad($point2_lat))) + (cos(deg2rad($point1_lat))*cos(deg2rad($point2_lat))*cos(deg2rad($point1_long-$point2_long)))));
+
+        // Conversión de la distancia en grados a la unidad escogida (kilómetros, millas o millas naúticas)
+        switch($unit) {
+            case 'km':
+                $distance = $degrees * 111.13384; // 1 grado = 111.13384 km, basándose en el diametro promedio de la Tierra (12.735 km)
+                break;
+            case 'mi':
+                $distance = $degrees * 69.05482; // 1 grado = 69.05482 millas, basándose en el diametro promedio de la Tierra (7.913,1 millas)
+                break;
+            case 'nmi':
+                $distance =  $degrees * 59.97662; // 1 grado = 59.97662 millas naúticas, basándose en el diametro promedio de la Tierra (6,876.3 millas naúticas)
+        }
+        return round($distance, $decimals);
+    }
+
+
+
 }
 
 $solve = new Solve();
 $solve->readFile();
 $solve->calculateDistances();
+$solve->sort();
 
 printf($solve);
