@@ -70,6 +70,9 @@ class Solve
         return $this;
     }
 
+    /**
+     * For all cities, calculate distances.
+     */
     public function calculateDistances()
     {
         // calculate distances between cities
@@ -84,6 +87,7 @@ class Solve
                 }
             }
 
+            // sort distances min to max, so the first item is the next city to visit.
             asort($this->distances[$city1]);
        }
 
@@ -91,7 +95,7 @@ class Solve
 
 
     /*
-     * there are too many algorithms to solve the salesman travel problem. I choose the simplest: select the sort path
+     * there are too many algorithms to solve the salesman travel problem. I choose select the sort path
      * iterative.
      *
      */
@@ -124,7 +128,6 @@ class Solve
     */
     private function clear($list, $actual)
     {
-
         unset ($list[$actual]);
         foreach($list as $key =>  $tmp) {
                 unset($list[$key][$actual]);
@@ -133,6 +136,9 @@ class Solve
         return $list;
     }
 
+    /**
+     * overrides __toString function to print solution to screen
+     */
     public function __toString()
     {
         $result = "List of Cities:\n";
@@ -145,9 +151,10 @@ class Solve
     }
 
 
-
     private function pythagoras($point1, $point2)
     {
+        // my pythagoras function has errors, so i use an other function find in:
+        // http://assemblysys.com/es/calculo-de-la-distancia-en-funcion-de-la-latitud-y-longitud-en-php/
         $h = $this->distanceCalculation($point1['lat'], $point1['lon'], $point2['lat'], $point2['lon']);
 
         return $h;
@@ -175,9 +182,11 @@ class Solve
 
 }
 
+
+/* main */
+
 $solve = new Solve();
 $solve->readFile();
 $solve->calculateDistances();
 $solve->sort();
-
 printf($solve);
