@@ -63,9 +63,8 @@ class Solve
             $key = trim($key);
 
             $this->cities[$key] = ['lat' => floatval($lat), 'lon' => floatval($lon)];
-            var_dump($key, $this->cities[$key]);
         }
-die();
+
         return $this;
     }
 
@@ -78,16 +77,24 @@ die();
         foreach($x as $city1 => $gps1) {
             foreach ($y as $city2 =>$gps2) {
                 $distance = $this->pythagoras($gps1, $gps2);
-var_dump($distance);
                 $this->distances[$city1."-".$city2] =  $distance;
             }
 
         }
 
-
-        var_dump($this->distances); die();
-
     }
+
+    public function __toString()
+    {
+        $result = "List of Cities:\n";
+
+        foreach ($this->cities as $city => $gps) {
+            $result.= sprintf("%s %f %f\n", $city, $gps['lat'], $gps['lon']);
+        }
+
+        return $result;
+    }
+
 
 
     private function pythagoras($point1, $point2)
@@ -100,3 +107,9 @@ var_dump($distance);
         return $h;
     }
 }
+
+$solve = new Solve();
+$solve->readFile();
+$solve->calculateDistances();
+
+printf($solve);
